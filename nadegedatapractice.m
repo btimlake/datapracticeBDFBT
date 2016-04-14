@@ -71,7 +71,7 @@ end
     % without creating numerous "for" loops?
     % for now, labeled them by hand
     
-SubjAvg = array2table(subjectaverages);
+SubjAvg = array2table(subjectaverages); % turn this info into a table
 
 DataRegretEnvy.age(1)
 
@@ -81,23 +81,39 @@ subjectaverages = [SubjID, DataRegretEnvy.age(s), SubjGroup, SubjSex, SubjEdu, a
    % Average decision times by
     % age
     % call choiceduration for subjects older than median
+    % call choiceduration for subjects young subjects (group 2)
     
 % make a separate table with averages of RT by group
     for g=1:length(unique(DataRegretEnvy.group))
         groupaverages(g,:) = [unique(DataRegretEnvy.group(DataRegretEnvy.group==g)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==SubjGroup(g)))];
     end
     
-    % call choiceduration for subjects young subjects (group 2)
+GroupAvg = array2table(groupaverages); % turn this info into a table
 
+    Players = unique(DataRegretEnvy.players)
+    % trial type (competitive?)
+% make a separate table with averages of RT by group, maintaining
+% competition variable
+for s=1:length(SubjID)
     
+ s=2   
+%     for p=1:length(Players)
+    for p=0:1
+%         p=1
+      subjectCompAvg(p,:) = [unique(DataRegretEnvy.id(DataRegretEnvy.id==s)) DataRegretEnvy.players(s)==p unique(DataRegretEnvy.age(DataRegretEnvy.id==s)) unique(DataRegretEnvy.group(DataRegretEnvy.id==s)) unique(DataRegretEnvy.sex(DataRegretEnvy.id==s)) unique(DataRegretEnvy.education(DataRegretEnvy.id==s)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s)))];
+    end
     
+        unique(DataRegretEnvy.players(DataRegretEnvy.id==s))==p
+% subjectCompAverages(s*p,:) = [DataRegretEnvy.id(DataRegretEnvy.id==s) DataRegretEnvy.players(unique(DataRegretEnvy.id==s)) unique(DataRegretEnvy.age(DataRegretEnvy.id==s)) unique(DataRegretEnvy.group(DataRegretEnvy.id==s)) unique(DataRegretEnvy.sex(DataRegretEnvy.id==s)) unique(DataRegretEnvy.education(DataRegretEnvy.id==s)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s)))];
+end
+
+unique(DataRegretEnvy.players(DataRegretEnvy.id==3))
+
+    % education
     
     
     % diff EV
     
-    % trial type (competitive?)
-    
-    % education
     
     
 % Analysis
