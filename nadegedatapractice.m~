@@ -8,8 +8,6 @@ choiceduration = DataRegretEnvy(2:4401, 22); % calls entire column of choicedura
 age = DataRegretEnvy(2:4401,3);
 allvalues = length(DataRegretEnvy);
 
-% Groups: 1=old 2=young
-
 % Average decision times by
     % age
     
@@ -81,10 +79,9 @@ subjectaverages = [SubjID, DataRegretEnvy.age(s), SubjGroup, SubjSex, SubjEdu, a
    % Average decision times by
     % age
     % call choiceduration for subjects older than median
-    
-% make a separate table with averages of RT by group
-    for g=1:length(unique(DataRegretEnvy.group))
-        groupaverages(g,:) = [unique(DataRegretEnvy.group(DataRegretEnvy.group==g)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==SubjGroup(g)))];
+
+    for g=1:length(unique(DataRegretEnvy.group(DataRegretEnvy.id==s)))
+        groupaverages(s,:) = [unique(DataRegretEnvy.id(DataRegretEnvy.id==s)) unique(DataRegretEnvy.age(DataRegretEnvy.id==s)) unique(DataRegretEnvy.group(DataRegretEnvy.id==s)) unique(DataRegretEnvy.sex(DataRegretEnvy.id==s)) unique(DataRegretEnvy.education(DataRegretEnvy.id==s)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s)))];
     end
     
     % call choiceduration for subjects young subjects (group 2)
