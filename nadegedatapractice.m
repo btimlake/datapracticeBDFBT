@@ -4,9 +4,9 @@ csvread(/Users/bentimberlake/Documents/MATLAB/datapracticeBDFBT/Data_RegretEnvy.
 
 data = Data_RegretEnvy.csv
 
-choiceduration = DataRegretEnvy(2:4401, 22); % calls entire column of choiceduration
-age = DataRegretEnvy(2:4401,3);
-allvalues = length(DataRegretEnvy);
+choiceduration = DataRegretEnvy(:, 22); % calls entire column of choiceduration
+age = DataRegretEnvy(:,3);
+allvalues = height(DataRegretEnvy);
 
 % Groups: 1=old 2=young
 
@@ -40,7 +40,7 @@ DataRegretEnvy.id(DataRegretEnvy.age==53) % which subject is/are 53?
 
 SubjID = unique(DataRegretEnvy.id);
 SubjAge = unique(DataRegretEnvy.age(DataRegretEnvy.id==s));
-SubjGroup = unique(DataRegretEnvy.group);
+% SubjGroup = unique(DataRegretEnvy.group);
 SubjSex = unique(DataRegretEnvy.sex);
 SubjEdu = unique(DataRegretEnvy.education);
 SubjAvgRT='SubjAvgRT'
@@ -49,7 +49,7 @@ averageRT(s) =  mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s))
 end
 
 for s=1:length(SubjID)
-SubjGroup(s) =  DataRegretEnvy.group(DataRegretEnvy.id==SubjID(s));
+SubjGroup(s) =  unique(DataRegretEnvy.group(DataRegretEnvy.id==SubjID(s)));
 end
 
 % labeling attempt: 
@@ -72,10 +72,22 @@ end
     % for now, labeled them by hand
     
 SubjAvg = array2table(subjectaverages); % turn this info into a table
+SubjAvg.Properties.VariableNames{1} = 'id'; % change labels
+SubjAvg.Properties.VariableNames{2} = 'age';
+SubjAvg.Properties.VariableNames{3} = 'group';
+SubjAvg.Properties.VariableNames{4} = 'sex';
+SubjAvg.Properties.VariableNames{5} = 'education';
+SubjAvg.Properties.VariableNames{6} = 'avgRT';
+
 
 DataRegretEnvy.age(1)
 
-subjectaverages = [SubjID, DataRegretEnvy.age(s), SubjGroup, SubjSex, SubjEdu, averageRT']
+% show number of trials for each subject
+for s=1:length(SubjID)
+subjecttrials(s,:) = [unique(DataRegretEnvy.id(DataRegretEnvy.id==s)) max(DataRegretEnvy.trial(DataRegretEnvy.id==s))];
+end
+
+% subjectaverages = [SubjID, DataRegretEnvy.age(s), SubjGroup, SubjSex, SubjEdu, averageRT']
 
 
    % Average decision times by
@@ -84,16 +96,48 @@ subjectaverages = [SubjID, DataRegretEnvy.age(s), SubjGroup, SubjSex, SubjEdu, a
     % call choiceduration for subjects young subjects (group 2)
     
 % make a separate table with averages of RT by group
-    for g=1:length(unique(DataRegretEnvy.group))
-        groupaverages(g,:) = [unique(DataRegretEnvy.group(DataRegretEnvy.group==g)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==SubjGroup(g)))];
+% for some reason, have to change syntax of last variable from how it is in
+% the per-subject RT. I.e. here: DataRegretEnvy.group==g
+% Actually never mind, this isn't how we should do group averages. We
+% should base them on subjectaverage avgRT
+    for g=1:length(unique(DataRegretEnvy.group));
+        groupaverages(g,:) = [unique(DataRegretEnvy.group(DataRegretEnvy.group==g)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==g))];
+    end
+    
+    % this one caculates group avg based on per-subj avgRT, rather than
+    % averaging all trials. In this case, it is the same, because all
+    % subjects conducted exactly 100 trials.
+    for g=1:length(unique(SubjAvg.group));
+        groupaveragesA(g,:) = [unique(SubjAvg.group(SubjAvg.group==g)) mean(SubjAvg.avgRT(SubjAvg.group==g))];
     end
     
 GroupAvg = array2table(groupaverages); % turn this info into a table
+GroupAvg.Properties.VariableNames{1} = 'group'; % change labels
+GroupAvg.Properties.VariableNames{2} = 'avgRT';
 
     Players = unique(DataRegretEnvy.players)
     % trial type (competitive?)
 % make a separate table with averages of RT by group, maintaining
 % competition variable
+
+% FIRST need to make a SubjAvg table with two avgRTs for each subject,
+% depending on player condition
+
+playerNumbers = p-1
+
+for s=1:length(SubjID)
+    for p=1:length(unique(DataRegretEnvy.players));
+        playerNumbers = p-1;
+subjectPlayTypeAverages(p,:) = [unique(DataRegretEnvy.id(DataRegretEnvy.id==s)) DataRegretEnvy.id(s)(DataRegretEnvy.players)==playerNumbers unique(DataRegretEnvy.age(DataRegretEnvy.id==s)) unique(DataRegretEnvy.group(DataRegretEnvy.id==s)) unique(DataRegretEnvy.sex(DataRegretEnvy.id==s)) unique(DataRegretEnvy.education(DataRegretEnvy.id==s)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s)))];
+    end
+end
+
+% Get p loop to work so it separates avgRT for one subject based on players
+% (0 or 1)
+
+
+DataRegretEnvy.players(s)==p 
+
 for s=1:length(SubjID)
     
  s=2   
@@ -103,6 +147,17 @@ for s=1:length(SubjID)
       subjectCompAvg(p,:) = [unique(DataRegretEnvy.id(DataRegretEnvy.id==s)) DataRegretEnvy.players(s)==p unique(DataRegretEnvy.age(DataRegretEnvy.id==s)) unique(DataRegretEnvy.group(DataRegretEnvy.id==s)) unique(DataRegretEnvy.sex(DataRegretEnvy.id==s)) unique(DataRegretEnvy.education(DataRegretEnvy.id==s)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s)))];
     end
     
+    
+        for g=1:length(unique(SubjAvg.group));
+            for p=0:1
+        groupPlayertypeAverages(g,:) = [unique(SubjAvg.group(SubjAvg.group==g)) SubjAvg.players==p mean(SubjAvg.avgRT(SubjAvg.group==g))];
+            end
+        end
+    
+                       length(unique(DataRegretEnvy.players==p
+ (SubjAvg.group==g)
+ 
+ 
         unique(DataRegretEnvy.players(DataRegretEnvy.id==s))==p
 % subjectCompAverages(s*p,:) = [DataRegretEnvy.id(DataRegretEnvy.id==s) DataRegretEnvy.players(unique(DataRegretEnvy.id==s)) unique(DataRegretEnvy.age(DataRegretEnvy.id==s)) unique(DataRegretEnvy.group(DataRegretEnvy.id==s)) unique(DataRegretEnvy.sex(DataRegretEnvy.id==s)) unique(DataRegretEnvy.education(DataRegretEnvy.id==s)) mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==SubjID(s)))];
 end
