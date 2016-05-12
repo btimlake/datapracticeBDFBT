@@ -13,28 +13,29 @@ allvalues = height(DataRegretEnvy);
 % Average decision times by
     % age
     
-    agecutoff = median(DataRegretEnvy(2:4401,3));
-    % call choiceduration for subjects older than median
-    
-    for i=1:allvalues 
-    
-        if age < agecutoff;
-            averageCD = choiceduration(i)
-        end
-    end
+   % Don't need age cutoff since groups already assigned
+%     agecutoff = median(DataRegretEnvy(2:4401,3));
+%     % call choiceduration for subjects older than median
+%     
+%     for i=1:allvalues 
+%     
+%         if age < agecutoff;
+%             averageCD = choiceduration(i)
+%         end
+%     end
     
 DataRegretEnvy.choiceduration
 
-mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==4))
+mean(DataRegretEnvy.choiceduration(DataRegretEnvy.id==4));
 
-mean(DataRegretEnvy.choiceduration(DataRegretEnvy.age < 55)) % now that these include the 53-year-old subject, it is the same as group 2 
-mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==2))
+mean(DataRegretEnvy.choiceduration(DataRegretEnvy.age < 55)); % now that these include the 53-year-old subject, it is the same as group 2 
+mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==2));
 
-mean(DataRegretEnvy.choiceduration(DataRegretEnvy.age > 55)) % now that these exclude the 53-year-old subject, it is the same as group 1 
-mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==1))
+mean(DataRegretEnvy.choiceduration(DataRegretEnvy.age > 55)); % now that these exclude the 53-year-old subject, it is the same as group 1 
+mean(DataRegretEnvy.choiceduration(DataRegretEnvy.group==1));
 
 Ages = unique(DataRegretEnvy.age); % list all ages
-DataRegretEnvy.id(DataRegretEnvy.age==53) % which subject is/are 53?
+DataRegretEnvy.id(DataRegretEnvy.age==53); % which subject is/are 53?
 
 % use dataset or table
 
